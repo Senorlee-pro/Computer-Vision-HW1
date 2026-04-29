@@ -36,11 +36,19 @@ root/
 
 ## Get started
 For training process, you should use `run` function in `train.py`, whose key parameters are listed below:
+
 `hidden_dims`: a three-dimensional tuple, corresponding to the dimensions of three hidden layers
+
 `epochs`: number of training epochs
+
 `lr`: learning rate
+
 `weight_decay`: weight decay rate, normalization coefficient
+
 `batch_size`: batch size, defaults to 128
+
 `lr_decay`: learning rate decay, defaults to 0.9
+
 `activation_strategy`: the activation function you wish to use in non-linear layers, including `relu`, `sigmoid`, `tanh`, defaults to `relu`
+
 `save_weights`: whether to save the best model weights to local directory, named `best_model.npz`, defaults to `False`
