@@ -18,6 +18,18 @@ def evaluate(model, loader):
     
     return total_correct / total_samples
 
+def evaluate_loss(model, loader, loss_fn):
+    total_loss = 0.0
+    total_samples = 0
+    
+    for image_batch, label_batch in loader:
+        logits = model.forward(image_batch)
+        l = loss_fn.forward(logits=logits, targets=label_batch)
+        
+        total_loss += l * label_batch.shape[0]
+        total_samples += label_batch.shape[0]
+    
+    return total_loss / total_samples
 
 def run(hidden_dims, epochs, lr, weight_decay, batch_size=128 ,lr_decay=0.9, activation_stategy="relu", save_weights=False):
     np.random.seed(42)
@@ -48,6 +60,7 @@ def run(hidden_dims, epochs, lr, weight_decay, batch_size=128 ,lr_decay=0.9, act
     best_val_acc = 0.0
 
     loss_record = []
+    val_loss_record = []
     acc_record = []
 
     for e in range(epochs):
@@ -73,6 +86,8 @@ def run(hidden_dims, epochs, lr, weight_decay, batch_size=128 ,lr_decay=0.9, act
         val_acc = evaluate(model, val_dataloader)
         acc_record.append(val_acc)
         print(f"Epoch {e} ends, accuracy on validation set: {val_acc:.4f}")
+        val_loss = evaluate_loss(model, val_dataloader, loss)
+        val_loss_record.append(val_loss)
 
         if save_weights:
             if val_acc > best_val_acc:
@@ -80,7 +95,7 @@ def run(hidden_dims, epochs, lr, weight_decay, batch_size=128 ,lr_decay=0.9, act
                 model.save_weights("best_model.npz")
                 print(f"Found better model, current best accuracy: {best_val_acc:.4f} ---")
     
-    return acc_record, loss_record
+    return acc_record, loss_record, val_loss_record
 
 
 def grid_search():
@@ -142,6 +157,15 @@ def visualize_loss(loss_record):
     plt.tight_layout()
     plt.show()
 
+def visualize_val_loss(val_loss_record):
+    plt.figure(figsize=(10, 6))
+    plt.plot(val_loss_record, linewidth=2, marker='o')
+    plt.xlabel('Epoch')
+    plt.ylabel('Validation Loss')
+    plt.title('Validation Loss Curve')
+    plt.grid(True)
+    plt.show()
+
 def visualize_acc(acc_record):
     plt.figure(figsize=(10, 6))
     plt.plot(acc_record, linewidth=2, color='blue', marker='o', markersize=4, markevery=5)
@@ -158,6 +182,7 @@ if __name__ == "__main__":
     lr = 0.1
     wd = 0.0001
 
-    acc_record, loss_record = run(hidden_dims=hidden_dims, epochs=10, lr=lr, weight_decay=wd, save_weights=True)
+    acc_record, loss_record, val_loss_record= run(hidden_dims=hidden_dims, epochs=10, lr=lr, weight_decay=wd)
     visualize_loss(loss_record)
+    visualize_val_loss(val_loss_record)
     visualize_acc(acc_record)
