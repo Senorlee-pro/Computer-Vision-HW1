@@ -52,3 +52,14 @@ For training process, you should use `run` function in `train.py`, whose key par
 `activation_strategy`: the activation function you wish to use in non-linear layers, including `relu`, `sigmoid`, `tanh`, defaults to `relu`
 
 `save_weights`: whether to save the best model weights to local directory, named `best_model.npz`, defaults to `False`
+
+For testing process, you should use `test` function in `test.py`, whose key parameters are listed below:
+
+`weight_file`: the path to your weight file
+
+`visualize_errors`: whether to print images that the model has incorrectly classified
+
+`num_errors_to_show`: the number of printed misclassified images
+
+`show_confusion_matrix`: whether to display the confusion matrix
+
